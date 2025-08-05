@@ -5,5 +5,5 @@ docker run -it --rm --net host --ipc host --privileged \
     -e DISPLAY=$DISPLAY \
     -e XAUTHORITY=$XAUTHORITY \
     -v ./ros_ws/:/root/ros_workspace \
-    --name lab1 \
+    --name proj \
     ros:project bash

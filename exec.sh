@@ -1,1 +1,1 @@
-docker exec -it lab1 bash
+docker exec -it proj bash
