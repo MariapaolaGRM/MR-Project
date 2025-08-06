@@ -1,6 +1,8 @@
+# start from ros jazzy
 FROM ros:jazzy
 RUN apt update -y && apt install ros-jazzy-turtlesim* -y
 RUN apt update -y && apt install -y ros-jazzy-rqt-graph
+# install basic tools
 RUN apt update -y && apt install -y wget
 RUN apt update -y && apt install -y ros-jazzy-urdf-tutorial
 RUN apt update -y && apt install -y liburdfdom-tools
