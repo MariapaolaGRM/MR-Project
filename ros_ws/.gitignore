@@ -1,0 +1,4 @@
+## file che git deve ignorare
+build/**/*
+install/**/*
+log/**/*
