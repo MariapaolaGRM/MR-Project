@@ -9,5 +9,17 @@
 
 ### ros_ws/src :
 - **turtlebot3_gazebo** <br>
-  Adapted from [ROBOTIS-GIT/turtlebot3_simulations](https://github.com/ROBOTIS-GIT/turtlebot3_simulations), includes robot models and launch files to spawn the TurtleBot3 in a Gazebo simulation and enable communication with ROS.
+  Adapted from [ROBOTIS-GIT/turtlebot3_simulations](https://github.com/ROBOTIS-GIT/turtlebot3_simulations), includes robot models and launch files to spawn the TurtleBot3 in a Gazebo simulation and enable communication with ROS.<br>
+  - Added 2 different model files, one for each robot.
+  - Added 2 different urdf files, one for each robot.
+  - Updated bridge file duplicating all the bridges by adding robot’s namespace before the topics.
+- **custom_pkg** <br>
+  Custom package created for the project, which includes nodes, launch and configuration files.
+  It contains:
+  - `main.launch.py` : main launch for the simulation.
+  - `odom_to_base.py` : custom node to make dynamic transformations from /odom to /base_footprint for each robot.
+
+
   
+  
+
