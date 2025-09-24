@@ -1,4 +1,7 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
+
 
 package_name = 'custom_pkg'
 
@@ -10,6 +13,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        # Aggiunta riga per lettura file launch
+        (os.path.join('share/', package_name, 'launch'), glob('launch/*')), 
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,6 +25,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'odom_to_base_broadcaster = custom_pkg.odom_to_base_broadcaster:main',
         ],
     },
 )
