@@ -1,14 +1,18 @@
-# start from ros jazzy
+# Imposta l’immagine di base del container su ROS 2 Jazzy
 FROM ros:jazzy
+# Installa il pacchetto turtlesim (ambiente grafico semplice per testare ROS) e tutti i suoi componenti
 RUN apt update -y && apt install ros-jazzy-turtlesim* -y
+# Installa rqt_graph, tool grafico per visualizzare il grafo dei nodi e delle connessioni di ROS
 RUN apt update -y && apt install -y ros-jazzy-rqt-graph
-# install basic tools
+# Installa i tool base
 RUN apt update -y && apt install -y wget
 RUN apt update -y && apt install -y ros-jazzy-urdf-tutorial
 RUN apt update -y && apt install -y liburdfdom-tools
-# install gazebo
+# Installa gazebo
 RUN apt update -y && apt install -y ros-jazzy-ros-gz
-# install navigation stuff
-RUN apt update -y && apt install -y ros-jazzy-navigation2 \
- ros-jazzy-nav2-bringup ros-jazzy-cartographer \
-  ros-jazzy-cartographer-ros
+# Installa navigation stuff
+RUN apt update -y && apt install -y ros-jazzy-navigation2 ros-jazzy-nav2-bringup
+# Imposta la directory di lavoro predefinita all’interno del container su /root/ros_workspace
+WORKDIR /root/ros_workspace
+
+RUN apt update -y && apt install -y python3-colcon-common-extensions
