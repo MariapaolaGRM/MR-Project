@@ -224,8 +224,15 @@
 
   <!--Camera Depth -->
   <joint name="robot1/camera_depth_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0.003 0.000 0.009" rpy="0 0 0"/>
     <parent link="robot1/camera_link"/>
+    <child link="robot1/camera_depth_frame"/>
+  </joint>
+  <link name="robot1/camera_depth_frame"/>
+
+  <joint name="robot1/camera_depth_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.5707 0 -1.57"/>
+    <parent link="robot1/camera_depth_frame"/>
     <child link="robot1/camera_depth_optical_frame"/>
   </joint>
   <link name="robot1/camera_depth_optical_frame"/>

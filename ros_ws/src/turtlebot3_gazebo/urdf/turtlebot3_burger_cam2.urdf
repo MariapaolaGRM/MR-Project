@@ -226,8 +226,15 @@
   <joint name="robot2/camera_depth_joint" type="fixed">
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="robot2/camera_link"/>
+    <child link="robot2/camera_depth_frame"/>
+  </joint>
+  <link name="robot2/camera_depth_frame"/>
+
+  <joint name="robot2/camera_depth_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.5707 0 -1.57"/>
+    <parent link="robot2/camera_depth_frame"/>
     <child link="robot2/camera_depth_optical_frame"/>
   </joint>
   <link name="robot2/camera_depth_optical_frame"/>
-
+  
 </robot>
