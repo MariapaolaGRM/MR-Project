@@ -15,6 +15,8 @@ setup(
         ('share/' + package_name, ['package.xml']),
         # Aggiunta riga per lettura file launch
         (os.path.join('share/', package_name, 'launch'), glob('launch/*')), 
+        (os.path.join('share/', package_name, 'config'), glob('config/*')), 
+        (os.path.join('share/', package_name, 'rviz'), glob('rviz/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -25,7 +27,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'odom_to_base_broadcaster = custom_pkg.odom_to_base_broadcaster:main',
+            'map_static_broadcaster = custom_pkg.map_static_broadcaster:main',
         ],
     },
 )
