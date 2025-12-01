@@ -16,3 +16,12 @@ RUN apt update -y && apt install -y ros-jazzy-navigation2 ros-jazzy-nav2-bringup
 WORKDIR /root/ros_workspace
 
 RUN apt update -y && apt install -y python3-colcon-common-extensions
+
+# Libreria associata ad explore lite 
+RUN apt update -y && apt install -y ros-jazzy-image-geometry
+
+# Librerie per YOLO
+RUN apt update -y && apt install -y python3-pip
+RUN pip install --break-system-packages --no-deps ultralytics 
+RUN pip install --break-system-packages torch torchvision polars
+RUN apt update -y && apt install -y ros-jazzy-cv-bridge
