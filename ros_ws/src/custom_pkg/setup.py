@@ -30,6 +30,7 @@ setup(
             'map_static_broadcaster = custom_pkg.map_static_broadcaster:main',
             'yolo_node = custom_pkg.yolo_node:main',
             'central_node = custom_pkg.central_node:main',
+            'goal_node = custom_pkg.goal_node:main',
         ],
     },
 )
