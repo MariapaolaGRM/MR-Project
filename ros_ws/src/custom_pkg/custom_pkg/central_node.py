@@ -37,19 +37,10 @@ class CentralNode(Node):
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
         # Posizioni iniziali robot
-        self.initial_pose_1 = PoseStamped()
-        self.initial_pose_1.header.frame_id = 'map'
-        self.initial_pose_1.pose.position.x = 2.5
-        self.initial_pose_1.pose.position.y = -3.0
-
-        self.initial_pose_2 = PoseStamped()
-        self.initial_pose_2.header.frame_id = 'map'
-        self.initial_pose_2.pose.position.x = 2.5
-        self.initial_pose_2.pose.position.y = 3.0
-
-        self.declare_parameter('positions', [[2.5, -3.0], [2.5, 3.0]])
-        self.robot_positions = self.get_parameter('positions').get_parameter_value().string_array_value 
-
+        #self.declare_parameter('positions', [[2.5, -3.0], [2.5, 3.0]])
+        #self.robot_positions = self.get_parameter('positions').get_parameter_value().string_array_value 
+        self.robot_positions = [[2.5, -3.0], [2.5, 3.0]]
+        
         # Publisher Marker Rviz  
         self.marker_pub = self.create_publisher(Marker, '/detected_objects_markers', 10)
         self.create_timer(0.5, self.publish_markers)  # aggiorna ogni 0.5s
@@ -195,6 +186,8 @@ class CentralNode(Node):
                                 for i, robot in enumerate(self.robot_names):
                                     x, y = self.robot_positions[i]
                                     self.send_nav_goal(robot, x, y)
+
+                                    #self.robot_positions = [[2.5, -3.0], [2.5, 3.0]]
 
         except Exception as e:
             self.get_logger().error(f"Errore in box_callback: {e}")
