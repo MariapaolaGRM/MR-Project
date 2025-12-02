@@ -95,7 +95,7 @@ def generate_launch_description():
                     {"use_sim_time": use_sim_time}
                     ],
         output="screen",
-        arguments=["--ros-args", "--log-level", "robot2.explore_node:=debug"]
+        # arguments=["--ros-args", "--log-level", "robot2.explore_node:=debug"]
         # remappings=[("/tf", "tf"), ("/tf_static", "tf_static")],
     )
 
