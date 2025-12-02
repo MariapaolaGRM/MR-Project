@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['cone', 'cube', 'sphere']
+
+roboflow:
+  workspace: mariapaola
+  project: mr-project-xi6hb
+  version: 3
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/mariapaola/mr-project-xi6hb/dataset/3

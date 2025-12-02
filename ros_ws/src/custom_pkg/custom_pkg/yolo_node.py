@@ -18,7 +18,7 @@ class YOLONode(Node):
 
         # Carica i modelli YOLO
         self.get_logger().info("Caricamento modelli YOLO...")
-        self.detection_model = YOLO("runs/detect/train4/weights/best.pt")
+        self.detection_model = YOLO("runs/detect/train/weights/best.pt")
 
         # CvBridge per convertire tra ROS Image e OpenCV (numpy)
         self.bridge = CvBridge()
