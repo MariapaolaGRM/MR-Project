@@ -4,24 +4,24 @@ FROM ros:jazzy
 RUN apt update -y && apt install ros-jazzy-turtlesim* -y
 # Installa rqt_graph, tool grafico per visualizzare il grafo dei nodi e delle connessioni di ROS
 RUN apt update -y && apt install -y ros-jazzy-rqt-graph
-# Installa i tool base
-RUN apt update -y && apt install -y wget
-RUN apt update -y && apt install -y ros-jazzy-urdf-tutorial
-RUN apt update -y && apt install -y liburdfdom-tools
-# Installa gazebo
-RUN apt update -y && apt install -y ros-jazzy-ros-gz
-# Installa navigation stuff
-RUN apt update -y && apt install -y ros-jazzy-navigation2 ros-jazzy-nav2-bringup
+# Installa i tool base 
+RUN apt update -y && apt install -y \
+    wget \
+    ros-jazzy-urdf-tutorial \
+    liburdfdom-tools \
+    # Installa gazebo
+    ros-jazzy-ros-gz \
+    # Installa navigation stuff
+    ros-jazzy-navigation2 ros-jazzy-nav2-bringup \
+    python3-colcon-common-extensions
+
 # Imposta la directory di lavoro predefinita all’interno del container su /root/ros_workspace
 WORKDIR /root/ros_workspace
-
-RUN apt update -y && apt install -y python3-colcon-common-extensions
 
 # Libreria associata ad explore lite 
 RUN apt update -y && apt install -y ros-jazzy-image-geometry
 
 # Librerie per YOLO
-RUN apt update -y && apt install -y python3-pip
+RUN apt update -y && apt install -y python3-pip ros-jazzy-cv-bridge
 RUN pip install --break-system-packages --no-deps ultralytics 
 RUN pip install --break-system-packages torch torchvision polars
-RUN apt update -y && apt install -y ros-jazzy-cv-bridge
