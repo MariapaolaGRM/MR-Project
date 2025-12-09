@@ -29,9 +29,9 @@
       debug_logging: false
       throttle_scans: 1
       transform_publish_period: 0.02 #if 0 never publishes odometry
-      map_update_interval: 2.0 #5.0 #Frequenza (in secondi) di aggiornamento della mappa globale.
+      map_update_interval: 5.0 # originale #Frequenza (in secondi) di aggiornamento della mappa globale.
       resolution: 0.05
-      restamp_tf: true # originale: false # Aggiorna il timestamp dei TF pubblicati (Simulazioni o ambienti con use_sim_time: true)
+      restamp_tf: false # originale: false # Aggiorna il timestamp dei TF pubblicati (Simulazioni o ambienti con use_sim_time: true)
       min_laser_range: 0.0 #for rastering images
       max_laser_range: 3.5 #for rastering images
       minimum_time_interval: 0.5
