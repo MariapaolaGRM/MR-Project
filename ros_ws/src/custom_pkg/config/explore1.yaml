@@ -2,10 +2,10 @@
   ros__parameters:
     robot_base_frame: robot1/base_link
     return_to_init: false
-    costmap_topic: /robot1/map 
-    costmap_updates_topic: /robot1/map_updates
+    costmap_topic: /robot1/global_costmap/costmap
+    costmap_updates_topic: /robot1/global_costmap/costmap_updates
     visualize: true
-    planner_frequency: 1.0 
+    planner_frequency: 0.15 #1.0 
     progress_timeout: 50.0 # Tempo massimo senza progresso prima di considerare una frontiera fallita
     potential_scale: 3.0
     orientation_scale: 0.0
