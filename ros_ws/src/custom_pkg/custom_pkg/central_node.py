@@ -37,9 +37,9 @@ class CentralNode(Node):
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
         # Posizioni iniziali robot
-        #self.declare_parameter('positions', [[2.5, -3.0], [2.5, 3.0]])
         #self.robot_positions = self.get_parameter('positions').get_parameter_value().string_array_value 
-        self.robot_positions = [[2.5, -3.0], [2.5, 3.0]]
+        self.robot_positions = [[0.0, -1.0], [0.0, 1.0]]
+        self.robots_sent_home = False
         
         # Publisher Marker Rviz  
         self.marker_pub = self.create_publisher(Marker, '/detected_objects_markers', 10)
@@ -73,6 +73,18 @@ class CentralNode(Node):
         z = depth_m
         return (x, y, z)
     
+    def pixel_to_meters(self, width: float, height: float, depth_m: float) -> Tuple[float,float,float]:
+        # Converti (u,v,depth) in coordinate camera usando modello pinhole
+
+        # Parametri della camera: fx, fy, cx, cy (ricavati dal topic camera_info)
+        fx = 320.25492609007654
+        fy = 320.25492609007654        
+        
+        # Calcolo posizione 3D dell'oggetto nel sistema di riferimento della camera
+        x = width * depth_m / fx
+        y = height * depth_m / fy
+        return (x, y)
+    
     def compute_average(self, pmap: Tuple[float,float,float], positions: Tuple[float,float,float]) -> Tuple[float,float,float]:
         alpha = 0.6 # confidenza per la media pesata
         
@@ -100,7 +112,35 @@ class CentralNode(Node):
         client.send_goal_async(goal)
 
         self.get_logger().info(f"Goal sent to {robot} at x={x}, y={y}")
+
+    def send_robots_home(self):
+        """Invia i robot alle posizioni iniziali"""
+        for i, robot in enumerate(self.robot_names):
+            x, y = self.robot_positions[i]
+            self.send_nav_goal(robot, x, y)
+            self.get_logger().info(f"{robot} inviato a ({x}, {y})")
+
+    def check_all_objects_found(self) -> bool:
+        """Verifica se tutti gli oggetti sono stati trovati con confidenza sufficiente"""
+        # Controllo: 3 classi, 2 oggetti per classe
+        if len(self.objects) != 3:
+            return False
         
+        for classe in [0, 1, 2]:
+            if classe not in self.objects:
+                return False
+            if len(self.objects[classe]) != 2:
+                return False
+        
+        # Conta oggetti con n > 40
+        count = 0
+        for classe in [0, 1, 2]:
+            for obj_id, obj in self.objects[classe].items():
+                if obj['n'] > 30: #40:
+                    count += 1
+        
+        return count == 6  # Tutti i 6 oggetti devono avere n > 40
+    
     def box_callback(self, msg: Box, robot: str):
         try:
             # Lettura valori dal messaggio
@@ -108,6 +148,8 @@ class CentralNode(Node):
             classe = int(msg.classe)
             xc = float(msg.xc) 
             yc = float(msg.yc) 
+            w = float(msg.w)
+            h = float(msg.h)
             depth_m = float(msg.distance) # Distanza dall'oggetto nel frame del robot
 
             # Verifica depth valida 
@@ -115,8 +157,17 @@ class CentralNode(Node):
                 self.get_logger().warn(f"[{robot}] depth non valida: {depth_m}")
                 return
 
+            # Scartiamo box di dimensioni maggiori di 0.8x1.0 m
+            box_width_m, box_height_m = self.pixel_to_meters(w, h, depth_m)
+            if box_width_m > 0.8 or box_height_m > 1.0:
+                self.get_logger().warn(f"Box scartata {box_width_m}, {box_height_m}")
+                return
+
             # Calcolo posizione 3D dell'oggetto nel sistema di riferimento della camera
-            cam_x, cam_y, cam_z = self.pixel_depth_to_camera_point(xc, yc, depth_m)
+            cx = 320.0
+            cy = 240.0 
+            cam_x, cam_y = self.pixel_to_meters(xc-cx, yc-cy, depth_m)
+            cam_z = depth_m
 
             # Listener della trasformazione tra coordinate oggetto nel frame optical e coordinate nel frame map
             p_cam = PointStamped() 
@@ -149,7 +200,7 @@ class CentralNode(Node):
                 diffz = p_map.point.z - pos[2]
 
                 dist = math.sqrt(diffx**2 + diffy**2 + diffz**2)
-                if dist < 0.5:
+                if dist < 0.7:
                     matched_id = obj_id
                     break        
 
@@ -174,20 +225,21 @@ class CentralNode(Node):
 
             
             # Torna in posizione scelta
-            if len(self.objects) == 3 and len(self.objects[0]) == 2 and len(self.objects[1]) == 2 and len(self.objects[2]) == 2:
-                count = 0
-                for classe, obj in self.objects.items(): 
-                    for obj_id, obj in self.objects[classe].items(): 
-                        n = obj['n']
-                        if n > 40: 
-                            count+=1 # count conta quante rilevazioni soddisfano n>3
-                            if count == 6:  
-                                self.get_logger().warn("Ritorno dei robot alla posizione scelta...")
-                                for i, robot in enumerate(self.robot_names):
-                                    x, y = self.robot_positions[i]
-                                    self.send_nav_goal(robot, x, y)
+            #if len(self.objects) == 3 and len(self.objects[0]) == 2 and len(self.objects[1]) == 2 and len(self.objects[2]) == 2:
+            #    count = 0
+            #    for classe, obj in self.objects.items(): 
+            #        for obj_id, obj in self.objects[classe].items(): 
+            #            n = obj['n']
+            #            if n > 40: 
+            #                count+=1 # count conta quante rilevazioni soddisfano n>3
+            #                if count == 6:  
+            #                    self.get_logger().warn("Ritorno dei robot alla posizione scelta...")
+            #                    self.send_robots_home()
+                                #for i, robot in enumerate(self.robot_names):
+                                #    x, y = self.robot_positions[i]
+                                #    self.send_nav_goal(robot, x, y)
 
-                                    #self.robot_positions = [[2.5, -3.0], [2.5, 3.0]]
+                                    #self.robot_positions = [[0.0, -1.0], [0.0, 1.0]]
 
         except Exception as e:
             self.get_logger().error(f"Errore in box_callback: {e}")
@@ -196,7 +248,7 @@ class CentralNode(Node):
         for classe, objects in self.objects.items():
             for obj_id, obj in objects.items():
                 n = obj['n']
-                if n > 30:
+                if n > 20: # num di osservazioni min per ogni oggetto prima di inserire il marker (30)
                     marker = Marker()
                     marker.header.frame_id = 'map'
                     marker.header.stamp = self.get_clock().now().to_msg()
@@ -217,9 +269,9 @@ class CentralNode(Node):
                     marker.pose.position.z = avg[2]
 
                     # Scala e colore
-                    marker.scale.x = 0.4
-                    marker.scale.y = 0.4
-                    marker.scale.z = 0.4
+                    marker.scale.x = 0.5
+                    marker.scale.y = 0.5
+                    marker.scale.z = 0.5
 
                     marker.color.r = 1.0
                     marker.color.g = 0.1
@@ -227,6 +279,13 @@ class CentralNode(Node):
                     marker.color.a = 0.8
 
                     self.marker_pub.publish(marker)
+        
+        # Torna alla posizione finale desiderata
+        if not self.robots_sent_home:  # Controlla solo se non già fatto
+            if self.check_all_objects_found():
+                self.get_logger().warn("Tutti gli oggetti trovati! Ritorno dei robot...")
+                self.send_robots_home()
+                self.robots_sent_home = True  # Marca come completato
 
 def main(args=None):
     rclpy.init(args=args)

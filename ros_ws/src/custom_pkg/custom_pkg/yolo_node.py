@@ -64,12 +64,12 @@ class YOLONode(Node):
             return
 
     def image_callback(self, msg):
-        # Callback chiamato ad ogni immagine ricevuta.
+        # Callback chiamato ad ogni immagine ricevuta
         frame_rgb = self.bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')
 
         # Detection (solo se ci sono subscriber per risparmiare risorse)
         if self.det_image_pub.get_subscription_count() > 0:
-            det_result = self.detection_model(frame_rgb) 
+            det_result = self.detection_model(frame_rgb) # applica yolo sull'immagine
 
             boxes = det_result[0].boxes  # oggetto Boxes che contiene le bounding box rilevate
             if boxes is not None:
@@ -78,6 +78,7 @@ class YOLONode(Node):
                 classes = boxes.cls.cpu().numpy()
 
                 for i, (xy, conf, cls) in enumerate(zip(xs, confs, classes)):
+                    # visualizzazione di tutti i box rilevati (anche se non validi)
                     self.get_logger().info(f"Det {i}: classe={int(cls)}, conf={float(conf):.2f}, xyxy={xy.tolist()}")
                 
                 # xyxy = x1 y1 x2 y2
@@ -86,6 +87,7 @@ class YOLONode(Node):
                 # x2 coordinata X del punto in basso a destra del box - colonna pixel dove finisce la box
                 # y2 coordinata Y del punto in basso a destra del box - riga pixel dove finisce la box
 
+                # selelezioniamo solo box appartenenti alle classi 0,1,2 e confidenza maggiore di 0.90
                 valid_idx = [
                     i for i, (cls, conf) in enumerate(zip(classes, confs))
                     if int(cls) in [0, 1, 2] and conf > 0.90 #0.85
@@ -108,8 +110,9 @@ class YOLONode(Node):
                     
                     self.det_image_pub.publish(ros_img)
 
-                
+            #self.get_logger().info(f"Det filtrate: {det_result[0].boxes}")    
             for box in det_result[0].boxes:
+                #self.get_logger().info(f"Box: {box}")
                 xywh = box.xywh[0].tolist()
                 xc = int(xywh[0])
                 yc = int(xywh[1])
@@ -121,16 +124,33 @@ class YOLONode(Node):
                 
                 try:
                     # Evita errori di indice fuori dai limiti dell'immagine
-                    height, width = self.depth_image.shape[:]
+                    height, width = self.depth_image.shape[:] # dimensioni immagine di profondità
                     if xc < 0 or yc < 0 or xc >= width or yc >= height:
                         self.get_logger().warn(f"Coordinate fuori immagine: ({xc},{yc}) non in (0-{width},{height})")
                         continue
                     else:
-                        self.get_logger().info(f"Coordinate corrette, ({xc},{yc})") 
+                        self.get_logger().info(f"Coordinate corrette (coordinate centro: {xc},{yc})") 
 
                     # Estrai la distanza in metri dal pixel corrispondente
                     self.distance = float(self.depth_image[yc, xc])
-    
+
+                    ######################
+                    # Parametri della camera: fx, fy, cx, cy (ricavati dal topic camera_info)
+                    #fx = 320.25492609007654
+                    #fy = 320.25492609007654
+                    
+                    #box_width_px = xywh[2]
+                    #box_height_px = xywh[3]
+                    
+                    # Dimensioni reali in metri
+                    #box_width_m = (box_width_px * self.distance) / fx
+                    #box_height_m = (box_height_px * self.distance) / fy
+                    
+                    #self.get_logger().info(
+                    #    f"Box dimensioni: {box_width_px:.1f}x{box_height_px:.1f} px = "
+                    #    f"{box_width_m:.3f}x{box_height_m:.3f} m alla distanza di {self.distance:.2f} m"
+                    #) 
+                    ######################
 
                 except Exception as e:
                     self.get_logger().error(f"Errore calcolo distanza: {e}")
