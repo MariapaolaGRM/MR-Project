@@ -8,6 +8,7 @@ from launch_ros.actions import Node
 from launch.actions import GroupAction
 from launch_ros.actions import PushROSNamespace
 from launch_ros.actions import SetRemap
+
 from nav2_common.launch import ReplaceString
 
 def generate_launch_description():
@@ -19,19 +20,27 @@ def generate_launch_description():
         'launch', 'navigation_launch.py'  
     )
 
-    nav2_config_file_1 = os.path.join(
+    nav2_config_file = os.path.join(
         get_package_share_directory('custom_pkg'),
-        'config', 'nav2_config1.yaml'
+        'config', 'nav2_config.yaml'
     )
 
-    nav2_config_file_2 = os.path.join(
-        get_package_share_directory('custom_pkg'),
-        'config', 'nav2_config2.yaml'  
+    #nav2_config_file_2 = os.path.join(
+    #    get_package_share_directory('custom_pkg'),
+    #    'config', 'nav2_config2.yaml'  
+    #)
+
+    namespaced_nav1= ReplaceString(
+        source_file=nav2_config_file, replacements={"namespace":("robot1")} 
     )
 
-    config1 = os.path.join(
+    namespaced_nav2= ReplaceString(
+        source_file=nav2_config_file, replacements={"namespace":("robot2")} 
+    )
+
+    config = os.path.join(
         get_package_share_directory("custom_pkg"), 
-        "config", "explore1.yaml"
+        "config", "explore.yaml"
     )
 
     config2 = os.path.join(
@@ -51,7 +60,7 @@ def generate_launch_description():
                         'autostart':'true',
                         'namespace':'robot1',
                         'use_sim_time': use_sim_time,
-                        'params_file': nav2_config_file_1, 
+                        'params_file': namespaced_nav1, 
                     }.items()
                 )
             ]
@@ -68,7 +77,7 @@ def generate_launch_description():
                         'autostart':'true',
                         'namespace':'robot2',
                         'use_sim_time': use_sim_time,
-                        'params_file': nav2_config_file_2,  
+                        'params_file': namespaced_nav2,  
                     }.items()
                 )
             ]
@@ -80,8 +89,9 @@ def generate_launch_description():
         name="explore_node",
         namespace="robot1",
         executable="explore",
-        parameters=[config1, 
-                    {"use_sim_time": use_sim_time}],
+        parameters=[config, 
+                    {"use_sim_time": use_sim_time},
+                    {"robot_base_frame": "robot1/base_link"}],
         output="screen",
         # remappings=[("/tf", "/tf"), ("/tf_static", "/tf_static")],
     )
@@ -91,8 +101,9 @@ def generate_launch_description():
         name="explore_node",
         namespace='robot2',
         executable="explore",
-        parameters=[config2, 
-                    {"use_sim_time": use_sim_time}
+        parameters=[config, 
+                    {"use_sim_time": use_sim_time},
+                    {"robot_base_frame": "robot2/base_link"}
                     ],
         output="screen",
         # arguments=["--ros-args", "--log-level", "robot2.explore_node:=debug"]

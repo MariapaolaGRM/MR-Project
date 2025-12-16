@@ -10,6 +10,8 @@ from launch.actions import GroupAction
 from launch_ros.actions import PushROSNamespace
 from launch_ros.actions import SetRemap
 
+from nav2_common.launch import ReplaceString
+
 def generate_launch_description():
     ros_gz_sim = get_package_share_directory('ros_gz_sim')
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
@@ -80,21 +82,28 @@ def generate_launch_description():
         'launch', 'online_async_launch.py'  
     )
 
-    slam_config_1 = os.path.join(
+    slam_config = os.path.join(
         get_package_share_directory('custom_pkg'),
-        'config', 'slam1.yaml'  
+        'config', 'slam.yaml'  
     )
 
-    slam_config_2 = os.path.join(
-        get_package_share_directory('custom_pkg'),
-        'config', 'slam2.yaml' 
+    #slam_config_2 = os.path.join(
+    #    get_package_share_directory('custom_pkg'),
+    #    'config', 'slam2.yaml' 
+    #)
+
+    namespaced_slam1= ReplaceString(
+        source_file=slam_config, replacements={"namespace":("robot1")} 
+    )
+
+    namespaced_slam2= ReplaceString(
+        source_file=slam_config, replacements={"namespace":("robot2")} 
     )
 
     rviz_config = os.path.join(
         get_package_share_directory('custom_pkg'),
         'rviz', 'rviz_config.rviz'  
     )
-
 
     # Launch Gazebo simulation
     gzserver_cmd = IncludeLaunchDescription(
@@ -192,18 +201,17 @@ def generate_launch_description():
             'robot_description': robot_desc2
         }]
     )    
-    
 
     # Launch SLAM Toolbox
     slam1 = GroupAction(
         actions=[
             PushROSNamespace('robot1'),
-            SetRemap(src='/map', dst='/robot1/map'),
+            #SetRemap(src='/map', dst='/robot1/map'),
             IncludeLaunchDescription(
             PythonLaunchDescriptionSource(slam_launch),
             launch_arguments={
                 'use_sim_time': use_sim_time,  
-                'slam_params_file':slam_config_1,
+                'slam_params_file': namespaced_slam1,
             }.items()
             )
     ])
@@ -211,19 +219,18 @@ def generate_launch_description():
     slam2 = GroupAction(
         actions=[
             PushROSNamespace('robot2'),
-            SetRemap(src='/map', dst='/robot2/map'),
+            #SetRemap(src='/map', dst='/robot2/map'),
             IncludeLaunchDescription(
             PythonLaunchDescriptionSource(slam_launch),
             launch_arguments={
                 'use_sim_time': use_sim_time, 
-                'slam_params_file':slam_config_2,
+                'slam_params_file': namespaced_slam2,    
             }.items()
             )
     ])
 
-
     # Trasformazioni statiche per creare il frame map
-    map_broadcatser_cmd_1 = Node(
+    map_broadcaster_cmd_1 = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
         name="map_broadcaster_1",
@@ -236,7 +243,7 @@ def generate_launch_description():
         output="screen" 
     )
 
-    map_broadcatser_cmd_2 = Node(
+    map_broadcaster_cmd_2 = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
         name="map_broadcaster_2", 
@@ -280,13 +287,12 @@ def generate_launch_description():
             arguments=['-d', rviz_config],
             parameters=[{'use_sim_time': use_sim_time}],
             output='screen')
-    
 
     # Add the commands to the launch description
     ld = LaunchDescription()
 
-    ld.add_action(gzserver_cmd)
-    ld.add_action(gzclient_cmd)
+    ld.add_action(gzserver_cmd) 
+    #ld.add_action(gzclient_cmd) # se commentato non si apre gazebo
     ld.add_action(set_env_vars_resources)
     
     ld.add_action(spawn_turtlebot_cmd1)
@@ -299,9 +305,9 @@ def generate_launch_description():
     ld.add_action(slam1)
     ld.add_action(slam2)
 
-    ld.add_action(map_broadcatser_cmd_1)
-    ld.add_action(map_broadcatser_cmd_2)
-
+    ld.add_action(map_broadcaster_cmd_1)
+    ld.add_action(map_broadcaster_cmd_2)
+    
     ld.add_action(yolo_node_1)
     ld.add_action(yolo_node_2)
 
