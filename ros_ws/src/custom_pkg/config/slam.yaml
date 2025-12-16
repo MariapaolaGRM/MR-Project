@@ -12,12 +12,14 @@
       ceres_loss_function: None
 
       # ROS Parameters
-      odom_frame: robot1/odom
-      map_frame: robot1/map
-      base_frame: robot1/base_footprint
-      scan_topic: /robot1/scan
+      odom_frame: namespace/odom
+      map_frame: namespace/map
+      base_frame: namespace/base_footprint
+      scan_topic: scan
       use_map_saver: true
       mode: mapping #localization
+
+      map_name: /namespace/map
 
       # if you'd like to immediately start continuing a map at a given pose
       # or at the dock, but they are mutually exclusive, if pose is given
@@ -29,11 +31,11 @@
       debug_logging: false
       throttle_scans: 1
       transform_publish_period: 0.02 #if 0 never publishes odometry
-      map_update_interval: 5.0 # originale #Frequenza (in secondi) di aggiornamento della mappa globale.
+      map_update_interval: 1.0 #5.0 # originale #Frequenza (in secondi) di aggiornamento della mappa globale.
       resolution: 0.05
       restamp_tf: false # originale: false # Aggiorna il timestamp dei TF pubblicati (Simulazioni o ambienti con use_sim_time: true)
       min_laser_range: 0.0 #for rastering images
-      max_laser_range: 3.5 #for rastering images
+      max_laser_range: 5.0 #3.5 #for rastering images
       minimum_time_interval: 0.5
       transform_timeout: 0.2
       tf_buffer_duration: 30.0
@@ -43,10 +45,10 @@
       # General Parameters
       use_scan_matching: true
       use_scan_barycenter: true
-      minimum_travel_distance: 0.5
-      minimum_travel_heading: 0.5
+      minimum_travel_distance: 0.2 #0.5 
+      minimum_travel_heading: 0.2 #0.5
       scan_buffer_size: 10
-      scan_buffer_maximum_scan_distance: 10.0
+      scan_buffer_maximum_scan_distance: 10.0 # Numero di scan memorizzati nel buffer per l'elaborazione asincrona.
       link_match_minimum_response_fine: 0.1  
       link_scan_maximum_distance: 1.5
       loop_search_maximum_distance: 3.0
