@@ -75,7 +75,7 @@ class GoalNode(Node):
             self.get_logger().warn(f"Last pose {self.last_pose}")
             return
 
-        if (time.time() - self.last_move_time) > 40.0: # Se robot sta fermo da 40 secondi
+        if (time.time() - self.last_move_time) > 50.0: # Se robot sta fermo da 40 secondi
             stalled = True
 
         if stalled:
@@ -84,13 +84,13 @@ class GoalNode(Node):
                 # Invia un altro goal 
                 self.goal_sent = False
                 self.resume_exploration()
-                self.send_goal(value = -0.5)
+                self.send_goal(value = -1.0)
                 return
             else:
                 # Invia il primo goal
                 self.goal_sent = True
                 self.resume_exploration()
-                self.send_goal(value = 0.5)
+                self.send_goal(value = 1.0)
                 return
 
     def send_goal(self, value):
