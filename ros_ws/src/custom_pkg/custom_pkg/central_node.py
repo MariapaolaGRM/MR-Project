@@ -12,6 +12,7 @@ from visualization_msgs.msg import Marker
 
 from nav2_msgs.action import NavigateToPose
 from rclpy.action import ActionClient
+from std_msgs.msg import Bool
 
 class CentralNode(Node):
     def __init__(self):
@@ -32,6 +33,7 @@ class CentralNode(Node):
         self.objects: Dict[int, Dict[str, Dict]] = {}
         self.id = 0
 
+
         # TF2
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
@@ -40,6 +42,7 @@ class CentralNode(Node):
         #self.robot_positions = self.get_parameter('positions').get_parameter_value().string_array_value 
         self.robot_positions = [[0.0, -1.0], [0.0, 1.0]]
         self.robots_sent_home = False
+        self.count = 0
         
         # Publisher Marker Rviz  
         self.marker_pub = self.create_publisher(Marker, '/detected_objects_markers', 10)
@@ -48,6 +51,8 @@ class CentralNode(Node):
         # Action per far tornare i robot in una posizione scelta 
         # Funzionante solo con house2_model
         self.nav_clients = {}   # dizionario robot → ActionClient
+        self.resume_pub = {}
+        self.goal_node_control_pub = {}
 
         for robot in self.robot_names:
             topic = f'/{robot}/navigate_to_pose'
@@ -57,21 +62,35 @@ class CentralNode(Node):
                 topic
             )
             self.get_logger().info(f"Created ActionClient for {robot} on {topic}")
+        
+            # Explorer resume publisher 
+            self.resume_pub[robot] = self.create_publisher(
+                Bool,
+                f"/{robot}/explore/resume",
+                10
+            )
 
-    def pixel_depth_to_camera_point(self, u: float, v: float, depth_m: float) -> Tuple[float,float,float]:
+            # Publisher per disattivare goal node
+            self.goal_node_control_pub[robot] = self.create_publisher(
+                Bool,
+                f"/{robot}/goal_node/active",
+                10
+            )
+
+    #def pixel_depth_to_camera_point(self, u: float, v: float, depth_m: float) -> Tuple[float,float,float]:
         # Converti (u,v,depth) in coordinate camera usando modello pinhole
 
         # Parametri della camera: fx, fy, cx, cy (ricavati dal topic camera_info)
-        fx = 320.25492609007654
-        fy = 320.25492609007654
-        cx = 320.0
-        cy = 240.0        
+    #    fx = 320.25492609007654
+    #    fy = 320.25492609007654
+    #    cx = 320.0
+    #    cy = 240.0        
         
         # Calcolo posizione 3D dell'oggetto nel sistema di riferimento della camera
-        x = (u - cx) * depth_m / fx
-        y = (v - cy) * depth_m / fy
-        z = depth_m
-        return (x, y, z)
+    #    x = (u - cx) * depth_m / fx
+    #    y = (v - cy) * depth_m / fy
+    #    z = depth_m
+    #    return (x, y, z)
     
     def pixel_to_meters(self, width: float, height: float, depth_m: float) -> Tuple[float,float,float]:
         # Converti (u,v,depth) in coordinate camera usando modello pinhole
@@ -86,14 +105,16 @@ class CentralNode(Node):
         return (x, y)
     
     def compute_average(self, pmap: Tuple[float,float,float], positions: Tuple[float,float,float]) -> Tuple[float,float,float]:
+        '''Funzione che calcola la media mobile, dando più peso alle rilevazioni precedenti'''
         alpha = 0.6 # confidenza per la media pesata
         
-        sx = positions[0]*alpha + pmap[0]*(1-alpha)
+        sx = positions[0]*alpha + pmap[0]*(1-alpha) 
         sy = positions[1]*alpha + pmap[1]*(1-alpha)
         sz = positions[2]*alpha + pmap[2]*(1-alpha)
         return (sx, sy, sz)
     
     def send_nav_goal(self, robot, x, y): 
+        '''Crea goal da inviare'''
         client = self.nav_clients[robot]
 
         goal = NavigateToPose.Goal()
@@ -117,29 +138,39 @@ class CentralNode(Node):
         """Invia i robot alle posizioni iniziali"""
         for i, robot in enumerate(self.robot_names):
             x, y = self.robot_positions[i]
+            msg = Bool()
+            msg.data = False
+            # Ferma explore_node
+            self.resume_pub[robot].publish(msg)
             self.send_nav_goal(robot, x, y)
             self.get_logger().info(f"{robot} inviato a ({x}, {y})")
+            # Ferma goal_node
+            self.goal_node_control_pub[robot].publish(msg)
 
     def check_all_objects_found(self) -> bool:
         """Verifica se tutti gli oggetti sono stati trovati con confidenza sufficiente"""
         # Controllo: 3 classi, 2 oggetti per classe
+        self.get_logger().info(f"Num classi trovate {len(self.objects)}")
+        self.count = 0
         if len(self.objects) != 3:
             return False
         
         for classe in [0, 1, 2]:
-            if classe not in self.objects:
+            self.get_logger().info(f"Log 1 {classe}")
+            if classe not in self.objects: # Verifica se la classe corrente esiste nel dizionario self.objects
+                self.get_logger().info(f"Log 2")
                 return False
-            if len(self.objects[classe]) != 2:
+            if len(self.objects[classe]) < 1:#2: # Verifica se per la classe corrente è stato trovato esattamente 1 oggetto.
+                self.get_logger().info(f"Log 3 {len(self.objects[classe])}")
                 return False
+            else:
+                self.get_logger().info(f"oggetti della classe {classe}: {len(self.objects[classe])}")
+                for obj_id, obj in self.objects[classe].items():
+                    if obj['n'] > 20:
+                        self.count += 1
+                        self.get_logger().info(f"n = {obj['n']}, count = {self.count}")
         
-        # Conta oggetti con n > 40
-        count = 0
-        for classe in [0, 1, 2]:
-            for obj_id, obj in self.objects[classe].items():
-                if obj['n'] > 30: #40:
-                    count += 1
-        
-        return count == 6  # Tutti i 6 oggetti devono avere n > 40
+        return self.count == 3 #6  # Tutti i 6 oggetti devono avere n > 40
     
     def box_callback(self, msg: Box, robot: str):
         try:
@@ -192,7 +223,7 @@ class CentralNode(Node):
 
             matched_id = None
 
-            # Se rileva 2 oggetti uguali a meno di 0.5m li registra una sola volta 
+            # Se rileva 2 oggetti uguali a meno di 0.7m li registra una sola volta 
             for obj_id, obj in self.objects[classe].items():
                 pos = obj['avg'] 
                 diffx = p_map.point.x - pos[0]
@@ -200,7 +231,7 @@ class CentralNode(Node):
                 diffz = p_map.point.z - pos[2]
 
                 dist = math.sqrt(diffx**2 + diffy**2 + diffz**2)
-                if dist < 0.7:
+                if dist < 1.0: # distanza tra 2 oggetti rilevati per capire che siano lo stesso oggetto
                     matched_id = obj_id
                     break        
 
@@ -217,7 +248,7 @@ class CentralNode(Node):
                 matched_id = new_id
             else:
                 # Oggetto esistente
-                self.get_logger().info(f"Oggetto esistente")
+                #self.get_logger().info(f"Oggetto esistente")
                 self.objects[classe][matched_id]['n'] += 1
                 self.objects[classe][matched_id]['avg'] = self.compute_average((p_map.point.x, p_map.point.y, p_map.point.z), self.objects[classe][matched_id]['positions'])
                 self.objects[classe][matched_id]['positions'] = (p_map.point.x, p_map.point.y, p_map.point.z)
@@ -281,7 +312,7 @@ class CentralNode(Node):
                     self.marker_pub.publish(marker)
         
         # Torna alla posizione finale desiderata
-        if not self.robots_sent_home:  # Controlla solo se non già fatto
+        if self.robots_sent_home==False:  # Controlla solo se non già fatto
             if self.check_all_objects_found():
                 self.get_logger().warn("Tutti gli oggetti trovati! Ritorno dei robot...")
                 self.send_robots_home()

@@ -26,6 +26,9 @@ class GoalNode(Node):
         self.last_pose = None
         self.goal_sent = False
 
+        # AGGIUNTO: Stato del nodo (attivo o disattivato)
+        self.is_active = True
+
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
@@ -34,6 +37,14 @@ class GoalNode(Node):
             Odometry,
             f"/{self.ns}/odom",
             self.odom_callback,
+            10
+        )
+
+        # AGGIUNTO: Subscriber per controllare l'attivazione del nodo
+        self.control_sub = self.create_subscription(
+            Bool,
+            f"/{self.ns}/goal_node/active",
+            self.control_callback,
             10
         )
 
@@ -55,6 +66,15 @@ class GoalNode(Node):
         timer_period = 1  # Timer a 1s
         self.timer = self.create_timer(timer_period, self.check)
 
+    # AGGIUNTO: Callback per attivare/disattivare il nodo
+    def control_callback(self, msg: Bool):
+        """Callback per attivare/disattivare il goal_node"""
+        self.is_active = msg.data
+        if self.is_active==False:
+            self.get_logger().warn(f"[{self.ns}] GoalNode DISATTIVATO - cancellazione goal attivi")
+            # Reset stato
+            self.goal_sent = False
+
     def odom_callback(self, msg: Odometry):
         vx = msg.twist.twist.linear.x
         vy = msg.twist.twist.linear.y
@@ -68,6 +88,10 @@ class GoalNode(Node):
             self.last_move_time = time.time()
     
     def check(self):
+        # MODIFICATO: Controlla se il nodo è attivo prima di fare qualsiasi cosa
+        if self.is_active == False:
+            return  # Non fa nulla se disattivato
+        
         stalled = False
         self.get_logger().warn(f"Stalled {stalled}")
 
@@ -83,14 +107,14 @@ class GoalNode(Node):
             if self.goal_sent: # True
                 # Invia un altro goal 
                 self.goal_sent = False
-                self.resume_exploration()
                 self.send_goal(value = -1.0)
+                self.resume_exploration
                 return
             else:
                 # Invia il primo goal
                 self.goal_sent = True
-                self.resume_exploration()
                 self.send_goal(value = 1.0)
+                self.resume_exploration
                 return
 
     def send_goal(self, value):
@@ -135,6 +159,7 @@ class GoalNode(Node):
         msg.data = True
         self.resume_pub.publish(msg)
         self.get_logger().info(f"[{self.ns}] Sent explore/resume TRUE")
+        
 
 def main(args=None):
     rclpy.init(args=args)
