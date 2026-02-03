@@ -12,18 +12,18 @@ class YOLONode(Node):
     def __init__(self):
         super().__init__('yolo_node')
         
-        # Legge il namespace del robot
+        # Read the robot namespace
         self.declare_parameter('namespace', 'robot')
         self.namespace = self.get_parameter('namespace').get_parameter_value().string_value
 
-        # Carica i modelli YOLO
-        self.get_logger().info("Caricamento modelli YOLO...")
+        # Load YOLO models
+        self.get_logger().info("Loading YOLO models...")
         self.detection_model = YOLO("runs/detect/train/weights/best.pt")
 
-        # CvBridge per convertire tra ROS Image e OpenCV (numpy)
+        # CvBridge for converting between ROS Image and OpenCV (numpy)
         self.bridge = CvBridge()
 
-        # Inizializzazione variabili
+        # Initialization of variables
         self.depth_image = None
         self.distance = 0.0
 
@@ -36,9 +36,9 @@ class YOLONode(Node):
             self.image_callback,
             5
         )
-        self.get_logger().info('Ultralytics node inizializzato. In attesa di immagini...')
+        self.get_logger().info('Ultralytics node initialized. Waiting for images...')
 
-        # Subscriber alla depth image
+        # Subscriber to depth image
         camera_depth_topic =f'/{self.namespace}/camera/depth/image_raw'
         self.create_subscription(
             Image,
@@ -47,115 +47,95 @@ class YOLONode(Node):
             5
         )
 
-        # Publisher delle immagini annotate
+        # Publisher of annotated images
         topic_detection = f'/{self.namespace}/ultralytics/detection/image'
         self.det_image_pub = self.create_publisher(Image, topic_detection, 5)
 
-        # Publisher delle informazioni ricavate con yolo (classe, xc, yc, w, h, distance)
+        # Publisher of information obtained with yolo (class, xc, yc, w, h, distance)
         self.det_pub = self.create_publisher(Box, f'/{self.namespace}/yolo/detections', 10)
 
     def depth_callback(self, msg):
-        # Salva l'ultima immagine di profondità ricevuta 
+        # Save the last depth image received 
         try:
             depth = self.bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough')
             self.depth_image = depth
         except Exception as e:
-            self.get_logger().error(f"Errore conversione depth: {e}")
+            self.get_logger().error(f"Depth conversion error: {e}")
             return
 
     def image_callback(self, msg):
-        # Callback chiamato ad ogni immagine ricevuta
+        # Callback called for each image received
         frame_rgb = self.bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')
 
-        # Detection (solo se ci sono subscriber per risparmiare risorse)
+        # Detection (only if there are subscribers to save resources)
         if self.det_image_pub.get_subscription_count() > 0:
-            det_result = self.detection_model(frame_rgb) # applica yolo sull'immagine
+            det_result = self.detection_model(frame_rgb) # apply yolo to the image
 
-            boxes = det_result[0].boxes  # oggetto Boxes che contiene le bounding box rilevate
+            boxes = det_result[0].boxes  # Boxes object containing the detected bounding boxes
             if boxes is not None:
-                xs = boxes.xyxy.cpu().numpy()  # se su GPU, passare a CPU e numpy
+                xs = boxes.xyxy.cpu().numpy()  # if on GPU, switch to CPU and numpy
                 confs = boxes.conf.cpu().numpy()
                 classes = boxes.cls.cpu().numpy()
 
                 for i, (xy, conf, cls) in enumerate(zip(xs, confs, classes)):
-                    # visualizzazione di tutti i box rilevati (anche se non validi)
+                    # display of all detected boxes (even if invalid)
                     self.get_logger().info(f"Det {i}: classe={int(cls)}, conf={float(conf):.2f}, xyxy={xy.tolist()}")
                 
                 # xyxy = x1 y1 x2 y2
-                # x1 coordinata X del punto in alto a sinistra del box - colonna pixel da cui inizia la box
-                # y1 coordinata Y del punto in alto a sinistra del box - riga pixel da cui inizia la box
-                # x2 coordinata X del punto in basso a destra del box - colonna pixel dove finisce la box
-                # y2 coordinata Y del punto in basso a destra del box - riga pixel dove finisce la box
+                # x1: X coordinate of the top left corner of the box - pixel column where the box begins
+                # y1: Y coordinate of the top left corner of the box - pixel row where the box begins
+                # x2: X coordinate of the bottom right corner of the box - pixel column where the box ends
+                # y2: Y coordinate of the bottom right corner of the box - pixel row where the box ends
 
-                # selelezioniamo solo box appartenenti alle classi 0,1,2 e confidenza maggiore di 0.90
+                # Select only boxes belonging to classes 0, 1, and 2 and with confidence greater than 0.90.
                 valid_idx = [
                     i for i, (cls, conf) in enumerate(zip(classes, confs))
-                    if int(cls) in [0, 1, 2] and conf > 0.90 #0.85
+                    if int(cls) in [0, 1, 2] and conf > 0.90 
                 ]
 
-                # Se ci sono box valide
+                # If there are valid boxes
                 if valid_idx:
                     filtered_boxes = Boxes(
                         boxes=boxes.data[valid_idx],
                         orig_shape=det_result[0].orig_shape
                     )
 
-                    # Sostituisci temporaneamente nel risultato
+                    # Temporarily replace in the result
                     det_result[0].boxes = filtered_boxes
 
-                    # Box filtrate 
+                    # Filter boxes 
                     det_annotated = det_result[0].plot(show=False)
                     ros_img = self.bridge.cv2_to_imgmsg(det_annotated, encoding='rgb8')
                     ros_img.header = msg.header
                     
                     self.det_image_pub.publish(ros_img)
-
-            #self.get_logger().info(f"Det filtrate: {det_result[0].boxes}")    
+    
             for box in det_result[0].boxes:
-                #self.get_logger().info(f"Box: {box}")
                 xywh = box.xywh[0].tolist()
                 xc = int(xywh[0])
                 yc = int(xywh[1])
 
-                # Verifica che l'immagine di profondità sia disponibile
+                # Verify that the depth image is available
                 if self.depth_image is None:
-                    self.get_logger().warn("Nessuna depth image disponibile ancora.")
+                    self.get_logger().warn("No depth image available yet.")
                     return
                 
                 try:
-                    # Evita errori di indice fuori dai limiti dell'immagine
-                    height, width = self.depth_image.shape[:] # dimensioni immagine di profondità
+                    # Avoid index errors outside the image boundaries
+                    height, width = self.depth_image.shape[:] # image depth dimensions
                     if xc < 0 or yc < 0 or xc >= width or yc >= height:
-                        self.get_logger().warn(f"Coordinate fuori immagine: ({xc},{yc}) non in (0-{width},{height})")
+                        self.get_logger().warn(f"Coordinates outside the image: ({xc},{yc}) not in (0-{width},{height})")
                         continue
                     else:
-                        self.get_logger().info(f"Coordinate corrette (coordinate centro: {xc},{yc})") 
+                        self.get_logger().info(f"Correct coordinates (center coordinates: {xc},{yc})") 
 
-                    # Estrai la distanza in metri dal pixel corrispondente
+                    # Extract the distance in meters from the corresponding pixel
                     self.distance = float(self.depth_image[yc, xc])
 
-                    ######################
-                    # Parametri della camera: fx, fy, cx, cy (ricavati dal topic camera_info)
-                    #fx = 320.25492609007654
-                    #fy = 320.25492609007654
-                    
-                    #box_width_px = xywh[2]
-                    #box_height_px = xywh[3]
-                    
-                    # Dimensioni reali in metri
-                    #box_width_m = (box_width_px * self.distance) / fx
-                    #box_height_m = (box_height_px * self.distance) / fy
-                    
-                    #self.get_logger().info(
-                    #    f"Box dimensioni: {box_width_px:.1f}x{box_height_px:.1f} px = "
-                    #    f"{box_width_m:.3f}x{box_height_m:.3f} m alla distanza di {self.distance:.2f} m"
-                    #) 
-                    ######################
-
                 except Exception as e:
-                    self.get_logger().error(f"Errore calcolo distanza: {e}")
+                    self.get_logger().error(f"Distance calculation error: {e}")
 
-                # Messaggio pubblicato nel topic
+                # Message posted in the topic
                 det_msg = Box()
                 det_msg.header.frame_id = f"{self.namespace}/camera_depth_optical_frame"
                 det_msg.header.stamp = self.get_clock().now().to_msg()
@@ -165,9 +145,7 @@ class YOLONode(Node):
                 det_msg.w = xywh[2]
                 det_msg.h = xywh[3]
                 det_msg.distance = self.distance
-
-                self.det_pub.publish(det_msg)
-                
+                self.det_pub.publish(det_msg)                
 
 def main(args=None):
     rclpy.init(args=args)
@@ -177,8 +155,6 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     node.destroy_node()
-    rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()

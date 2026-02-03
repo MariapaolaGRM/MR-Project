@@ -4,7 +4,6 @@ from rclpy.action import ActionClient
 
 import math
 import time
-
 import tf2_geometry_msgs
 
 from tf2_ros import Buffer, TransformListener
@@ -17,7 +16,7 @@ class GoalNode(Node):
     def __init__(self):
         super().__init__('goal_node')
 
-        # Legge il namespace del robot
+        # Read the robot namespace
         self.declare_parameter('namespace', 'robot')
         self.ns= self.get_parameter('namespace').get_parameter_value().string_value
         
@@ -26,9 +25,8 @@ class GoalNode(Node):
         self.last_pose = None
         self.goal_sent = False
 
-        # AGGIUNTO: Stato del nodo (attivo o disattivato)
+        # Node status (active or deactivated)
         self.is_active = True
-
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
@@ -40,7 +38,7 @@ class GoalNode(Node):
             10
         )
 
-        # AGGIUNTO: Subscriber per controllare l'attivazione del nodo
+        # Subscriber to check node activation
         self.control_sub = self.create_subscription(
             Bool,
             f"/{self.ns}/goal_node/active",
@@ -62,17 +60,16 @@ class GoalNode(Node):
             f"/{self.ns}/navigate_to_pose"
         )
 
-        # Timer per controllare stallo 
-        timer_period = 1  # Timer a 1s
+        # Timer to check stall 
+        timer_period = 1  # Timer at 1s
         self.timer = self.create_timer(timer_period, self.check)
 
-    # AGGIUNTO: Callback per attivare/disattivare il nodo
+    # Callback to activate/deactivate the node
     def control_callback(self, msg: Bool):
-        """Callback per attivare/disattivare il goal_node"""
         self.is_active = msg.data
         if self.is_active==False:
-            self.get_logger().warn(f"[{self.ns}] GoalNode DISATTIVATO - cancellazione goal attivi")
-            # Reset stato
+            self.get_logger().warn(f"[{self.ns}] GoalNode DISABLED - deletion of active goals")
+            # Reset status
             self.goal_sent = False
 
     def odom_callback(self, msg: Odometry):
@@ -80,51 +77,50 @@ class GoalNode(Node):
         vy = msg.twist.twist.linear.y
         v = math.sqrt(vx*vx + vy*vy)
 
-        # Salva ultima posa
+        # Save last pose
         self.last_pose = msg.pose.pose
 
-        # Se si è mosso -> aggiorna timestamp
+        # If it has moved -> update timestamp
         if v > 0.05:
             self.last_move_time = time.time()
     
     def check(self):
-        # MODIFICATO: Controlla se il nodo è attivo prima di fare qualsiasi cosa
+        # Check if the node is active before doing anything.
         if self.is_active == False:
-            return  # Non fa nulla se disattivato
+            return  # It does not matter if it is disabled
         
         stalled = False
         self.get_logger().warn(f"Stalled {stalled}")
 
-        if self.last_pose is None: # Se l'ultima posizione è vuota -> fare nulla
+        if self.last_pose is None: # If the last position is empty -> do nothing
             self.get_logger().warn(f"Last pose {self.last_pose}")
             return
 
-        if (time.time() - self.last_move_time) > 50.0: # Se robot sta fermo da 40 secondi
+        if (time.time() - self.last_move_time) > 50.0: # If the robot has been stationary for 50 seconds
             stalled = True
 
         if stalled:
             self.get_logger().warn(f"[{self.ns}] Robot appears stalled! Sending goal…")
             if self.goal_sent: # True
-                # Invia un altro goal 
+                # Send another goal 
                 self.goal_sent = False
                 self.send_goal(value = -1.0)
                 self.resume_exploration
                 return
             else:
-                # Invia il primo goal
+                # Send the first goal
                 self.goal_sent = True
                 self.send_goal(value = 1.0)
                 self.resume_exploration
                 return
 
     def send_goal(self, value):
-        # Costruisci un PoseStamped 
         pose_odom = PoseStamped()
         pose_odom.header.frame_id = f"{self.ns}/odom"
         pose_odom.header.stamp = self.get_clock().now().to_msg()
-        pose_odom.pose = self.last_pose  # posizione in odom (self.last_pose è un Pose)
+        pose_odom.pose = self.last_pose  # position in odom (self.last_pose is a Pose)
 
-        # Trasforma la posa in frame map
+        # Turn the pose into a frame map
         try:
             pose_map = self.tf_buffer.transform(
                 pose_odom,
@@ -132,18 +128,11 @@ class GoalNode(Node):
                 timeout=rclpy.duration.Duration(seconds=1)
             )
 
-            #transform = self.tf_buffer.lookup_transform(
-            #    f"{self.ns}/map", # to
-            #    f"{self.ns}/odom", # from
-            #    rclpy.time.Time()
-            #)
-            #self.get_logger().info(f"{pose_odom.pose}")
-            #pose_map = do_transform_pose(pose_odom, transform)
         except Exception as e:
             self.get_logger().error(f"TF transform failed: {e}")
             return
 
-        # Modifica solo la Y nel frame map
+        # Only change the Y in the frame map
         pose_map.pose.position.y += value
 
         goal = NavigateToPose.Goal()
@@ -169,7 +158,6 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     node.destroy_node()
-    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
