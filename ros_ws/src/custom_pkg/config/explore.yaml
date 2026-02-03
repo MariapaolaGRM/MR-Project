@@ -5,8 +5,8 @@
     costmap_topic: map #global_costmap/costmap
     costmap_updates_topic: map_updates #global_costmap/costmap_updates
     visualize: true
-    planner_frequency: 0.15 #1.0 
-    progress_timeout: 50.0 # Tempo massimo senza progresso prima di considerare una frontiera fallita
+    planner_frequency: 0.15 
+    progress_timeout: 50.0 # Maximum time without progress before considering a failed frontier
     potential_scale: 3.0
     orientation_scale: 0.0
     gain_scale: 1.0

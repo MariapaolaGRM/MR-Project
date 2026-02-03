@@ -66,7 +66,7 @@ controller_server:
     goal_checker:
       stateful: true
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.15 # Quanto vicino deve essere il robot alla posizione del goal (in metri) perché Nav2 lo consideri raggiunto.
+      xy_goal_tolerance: 0.15 # How close must the robot be to the goal position (in meters) for Nav2 to consider it reached
       yaw_goal_tolerance: 0.25
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
@@ -165,7 +165,7 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
-      update_frequency: 3.0 # originali 1.0 entrambi
+      update_frequency: 3.0 
       publish_frequency: 2.0 
       global_frame: namespace/map
       robot_base_frame: namespace/base_link
@@ -220,11 +220,11 @@ global_costmap:
         cost_scaling_factor: 5.0
       always_send_full_costmap: true
 
-#map_server: # carica una mappa già fatta
+#map_server: 
 #  ros__parameters:
 #    yaml_filename: "map.yaml"
 
-#map_saver: # permette di salvare una mappa generata da SLAM.
+#map_saver: 
 #  ros__parameters:
 #    save_map_timeout: 5.0
 #    free_thresh_default: 0.25
