@@ -146,7 +146,7 @@ If you do not need the 3D viewer, comment-out the gzclient_cmd block in ```gazeb
 ________________________________________
 ## 📚 References
 •	TurtleBot3: https://emanual.robotis.com/docs/en/platform/turtlebot3/overview/ <br>
-•	Nav2: https://navigation.ros.org/ <br> 
+•	Nav2: https://docs.nav2.org/ <br> 
 •	SLAM Toolbox: https://github.com/SteveMacenski/slam_toolbox <br>
 •	Explore Lite: https://github.com/robo-friends/m-explore-ros2 <br>
 •	Ultralytics YOLO: https://docs.ultralytics.com/ <br>
@@ -165,5 +165,6 @@ This project was developed by Mariapaola Germinario and Sara Laera as part of th
 
 
   
+
 
 
