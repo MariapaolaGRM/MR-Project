@@ -2,7 +2,6 @@ from setuptools import find_packages, setup
 import os
 from glob import glob
 
-
 package_name = 'custom_pkg'
 
 setup(
@@ -13,8 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        # Aggiunta riga per lettura file launch
-        (os.path.join('share/', package_name, 'launch'), glob('launch/*')), 
+        (os.path.join('share/', package_name, 'launch'), glob('launch/*')),  # Line for reading launch file
         (os.path.join('share/', package_name, 'config'), glob('config/*')), 
         (os.path.join('share/', package_name, 'rviz'), glob('rviz/*')),
     ],
@@ -31,6 +29,7 @@ setup(
             'yolo_node = custom_pkg.yolo_node:main',
             'central_node = custom_pkg.central_node:main',
             'goal_node = custom_pkg.goal_node:main',
+            'test_node = custom_pkg.test_node:main',
         ],
     },
 )
