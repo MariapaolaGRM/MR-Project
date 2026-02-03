@@ -1,27 +1,27 @@
-# Imposta l’immagine di base del container su ROS 2 Jazzy
+# Set the base image of the container to ROS 2 Jazzy
 FROM ros:jazzy
-# Installa il pacchetto turtlesim (ambiente grafico semplice per testare ROS) e tutti i suoi componenti
+# Install the turtlesim package (simple graphical environment for testing ROS) and all its components.
 RUN apt update -y && apt install ros-jazzy-turtlesim* -y
-# Installa rqt_graph, tool grafico per visualizzare il grafo dei nodi e delle connessioni di ROS
+# Install rqt_graph, a graphical tool for viewing the ROS node and connection graph.
 RUN apt update -y && apt install -y ros-jazzy-rqt-graph
-# Installa i tool base 
+# Install the basic tools 
 RUN apt update -y && apt install -y \
     wget \
     ros-jazzy-urdf-tutorial \
     liburdfdom-tools \
-    # Installa gazebo
+    # Install gazebo
     ros-jazzy-ros-gz \
-    # Installa navigation stuff
+    # Install navigation stuff
     ros-jazzy-navigation2 ros-jazzy-nav2-bringup \
     python3-colcon-common-extensions
 
-# Imposta la directory di lavoro predefinita all’interno del container su /root/ros_workspace
+# Set the default working directory within the container to /root/ros_workspace
 WORKDIR /root/ros_workspace
 
-# Libreria associata ad explore lite 
+# Library associated with explore lite 
 RUN apt update -y && apt install -y ros-jazzy-image-geometry
 
-# Librerie per YOLO
+# Bookstores for YOLO
 RUN apt update -y && apt install -y python3-pip ros-jazzy-cv-bridge
 RUN pip install --break-system-packages --no-deps ultralytics 
 RUN pip install --break-system-packages torch torchvision polars
