@@ -51,17 +51,17 @@
     </include>
 
     <model name='world_model'>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>0 0 0 0 0 1.5708</pose>
 
       <link name='wall_1'>
-        <pose frame=''>4 0 1.25 0 0 1.5708</pose>
+        <pose frame=''>0 -3 0 0 0 3.14159</pose>
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <visual name='wall_1_visual'>
-          <pose frame=''>0 0 0 0 0 0</pose>
+          <pose frame=''>0 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>12 0.15 2.5</size>
+              <size>15 0.15 2.5</size>
             </box>
           </geometry>
           <material>
@@ -75,16 +75,16 @@
             <specular>0.2 0.2 0.2 1</specular>
             <emissive>0 0 0 1</emissive>
           </material>
-          <cast_shadows>1</cast_shadows>
+          <cast_shadows>0</cast_shadows>
           <transparency>0</transparency>
         </visual>
         <collision name='wall_1_collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 0 0</pose>
+          <pose frame=''>0 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>12 0.15 2.5</size>
+              <size>15 0.15 2.5</size>
             </box>
           </geometry>
           <surface>
@@ -136,14 +136,14 @@
       </link>
 
       <link name='wall_2'>
-        <pose frame=''>0 -6 1.25 0 0 0</pose>
+        <pose frame=''>-7.575 0 0 0 0 1.5708</pose>
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <visual name='wall_2_visual'>
-          <pose frame=''>0 0 0 0 0 0</pose>
+          <pose frame=''>0 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>8 0.15 2.5</size>
+              <size>6.15 0.15 2.5</size>
             </box>
           </geometry>
           <material>
@@ -157,16 +157,16 @@
             <specular>0.2 0.2 0.2 1</specular>
             <emissive>0 0 0 1</emissive>
           </material>
-          <cast_shadows>1</cast_shadows>
+          <cast_shadows>0</cast_shadows>
           <transparency>0</transparency>
         </visual>
         <collision name='wall_2_collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 0 0</pose>
+          <pose frame=''>0 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>8 0.15 2.5</size>
+              <size>6.15 0.15 2.5</size>
             </box>
           </geometry>
           <surface>
@@ -218,14 +218,14 @@
       </link>
 
       <link name='wall_3'>
-        <pose frame=''>-4 0 1.25 0 0 1.5708</pose>
+        <pose frame=''>0 3 0 0 0 3.14159</pose>
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <visual name='wall_3_visual'>
-          <pose frame=''>0 0 0 0 0 0</pose>
+          <pose frame=''>0 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>12 0.15 2.5</size>
+              <size>15 0.15 2.5</size>
             </box>
           </geometry>
           <material>
@@ -239,16 +239,16 @@
             <specular>0.2 0.2 0.2 1</specular>
             <emissive>0 0 0 1</emissive>
           </material>
-          <cast_shadows>1</cast_shadows>
+          <cast_shadows>0</cast_shadows>
           <transparency>0</transparency>
         </visual>
         <collision name='wall_3_collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 0 0</pose>
+          <pose frame=''>0 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>12 0.15 2.5</size>
+              <size>15 0.15 2.5</size>
             </box>
           </geometry>
           <surface>
@@ -296,18 +296,18 @@
               </bullet>
             </contact>
           </surface>
-        </collision>        
+        </collision>      
       </link>
-
+        
       <link name='wall_4'>
-        <pose frame=''>0 6 1.25 0 0 0</pose>
+        <pose frame=''>7.575 0 0 0 0 1.5708</pose>
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <visual name='wall_4_visual'>
-          <pose frame=''>0 0 0 0 0 0</pose>
+          <pose frame=''>0 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>8 0.15 2.5</size>
+              <size>6.15 0.15 2.5</size>
             </box>
           </geometry>
           <material>
@@ -321,16 +321,16 @@
             <specular>0.2 0.2 0.2 1</specular>
             <emissive>0 0 0 1</emissive>
           </material>
-          <cast_shadows>1</cast_shadows>
+          <cast_shadows>0</cast_shadows>
           <transparency>0</transparency>
         </visual>
         <collision name='wall_4_collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 0 0</pose>
+          <pose frame=''>0 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>8 0.15 2.5</size>
+              <size>6.15 0.15 2.5</size>
             </box>
           </geometry>
           <surface>
@@ -379,17 +379,17 @@
             </contact>
           </surface>
         </collision>
-      </link>
+      </link> 
 
       <link name='wall_5'>
-        <pose frame=''>0 0 0 0 0 0</pose>
+        <pose frame=''>2.525 0 0 0 0 1.5708</pose>
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <visual name='wall_5_visual_1'>
-          <pose frame=''>2.75 0 1.25 0 0 0</pose>
+          <pose frame=''>2 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>2.5 0.15 2.5</size>
+              <size>2 0.15 2.5</size>
             </box>
           </geometry>
           <material>
@@ -403,14 +403,14 @@
             <specular>0.2 0.2 0.2 1</specular>
             <emissive>0 0 0 1</emissive>
           </material>
-          <cast_shadows>1</cast_shadows>
+          <cast_shadows>0</cast_shadows>
           <transparency>0</transparency>
         </visual>
         <visual name='wall_5_visual_2'>
-          <pose frame=''>0 0 2.25 0 0 0</pose>
+          <pose frame=''>-2 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>3 0.15 0.5</size>
+              <size>2 0.15 2.5</size>
             </box>
           </geometry>
           <material>
@@ -424,37 +424,16 @@
             <specular>0.2 0.2 0.2 1</specular>
             <emissive>0 0 0 1</emissive>
           </material>
-          <cast_shadows>1</cast_shadows>
+          <cast_shadows>0</cast_shadows>
           <transparency>0</transparency>
         </visual>
-        <visual name='wall_5_visual_3'>
-          <pose frame=''>-2.75 0 1.25 0 0 0</pose>
-          <geometry>
-            <box>
-              <size>2.5 0.15 2.5</size>
-            </box>
-          </geometry>
-          <material>
-            <pbr>
-              <metal>
-                <albedo_map>textures/bricks.png</albedo_map>
-              </metal>
-            </pbr>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-            <emissive>0 0 0 1</emissive>
-          </material>
-          <cast_shadows>1</cast_shadows>
-          <transparency>0</transparency>
-        </visual>        
         <collision name='wall_5_collision_1'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>2.75 0 1.25 0 0 0</pose>
+          <pose frame=''>2 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>2.5 0.15 2.5</size>
+              <size>2 0.15 2.5</size>
             </box>
           </geometry>
           <surface>
@@ -506,10 +485,10 @@
         <collision name='wall_5_collision_2'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 2.25 0 -0 0</pose>
+          <pose frame=''>-2 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>3 0.15 0.5</size>
+              <size>2 0.15 2.5</size>
             </box>
           </geometry>
           <surface>
@@ -558,13 +537,116 @@
             </contact>
           </surface>
         </collision>
-        <collision name='wall_5_collision_3'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>-2.75 0 1.25 0 0 0</pose>
+      </link>
+
+      <link name='wall_6'>
+        <pose frame=''>-2.525 0 0 0 0 1.5708</pose>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <visual name='wall_6_visual_1'>
+          <pose frame=''>2 0 1.25 0 0 0</pose>
           <geometry>
             <box>
-              <size>2.5 0.15 2.5</size>
+              <size>2 0.15 2.5</size>
+            </box>
+          </geometry>
+          <material>
+            <pbr>
+              <metal>
+                <albedo_map>textures/bricks.png</albedo_map>
+              </metal>
+            </pbr>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+            <emissive>0 0 0 1</emissive>
+          </material>
+          <cast_shadows>0</cast_shadows>
+          <transparency>0</transparency>
+        </visual>
+        <visual name='wall_6_visual_2'>
+          <pose frame=''>-2 0 1.25 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>2 0.15 2.5</size>
+            </box>
+          </geometry>
+          <material>
+            <pbr>
+              <metal>
+                <albedo_map>textures/bricks.png</albedo_map>
+              </metal>
+            </pbr>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+            <emissive>0 0 0 1</emissive>
+          </material>
+          <cast_shadows>0</cast_shadows>
+          <transparency>0</transparency>
+        </visual>
+        <collision name='wall_6_collision_1'>
+          <laser_retro>0</laser_retro>
+          <max_contacts>10</max_contacts>
+          <pose frame=''>2 0 1.25 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>2 0.15 2.5</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1</mu>
+                <mu2>1</mu2>
+                <fdir1>0 0 0</fdir1>
+                <slip1>0</slip1>
+                <slip2>0</slip2>
+              </ode>
+              <torsional>
+                <coefficient>1</coefficient>
+                <patch_radius>0</patch_radius>
+                <surface_radius>0</surface_radius>
+                <use_patch_radius>1</use_patch_radius>
+                <ode>
+                  <slip>0</slip>
+                </ode>
+              </torsional>
+            </friction>
+            <bounce>
+              <restitution_coefficient>0</restitution_coefficient>
+              <threshold>1e+06</threshold>
+            </bounce>
+            <contact>
+              <collide_without_contact>0</collide_without_contact>
+              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+              <collide_bitmask>1</collide_bitmask>
+              <ode>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+                <max_vel>0.01</max_vel>
+                <min_depth>0</min_depth>
+              </ode>
+              <bullet>
+                <split_impulse>1</split_impulse>
+                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+              </bullet>
+            </contact>
+          </surface>
+        </collision>
+        <collision name='wall_6_collision_2'>
+          <laser_retro>0</laser_retro>
+          <max_contacts>10</max_contacts>
+          <pose frame=''>-2 0 1.25 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>2 0.15 2.5</size>
             </box>
           </geometry>
           <surface>
@@ -616,7 +698,7 @@
       </link>
 
       <model name='box1'>
-        <pose>-3 -4.5 0.25 0 0 0</pose>
+        <pose>5.5 1.5 0.25 0 0 0</pose>
         <link name='box_link'>
           <inertial>
             <inertia>
@@ -651,9 +733,9 @@
               </box>
             </geometry>
             <material>
-              <ambient>0.3 0 0 1</ambient>
-              <diffuse>0.8 0 0 1</diffuse>
-              <specular>1 0.5 0.5 1</specular>
+              <ambient>0.2 0.5 0.5 1</ambient>
+              <diffuse>0.3 0.8 0.9 1</diffuse>
+              <specular>0.5 0.9 1 1</specular>
             </material>
           </visual>
           <pose>0 0 0 0 0 0</pose>
@@ -664,7 +746,7 @@
       </model>
 
       <model name='box2'>
-        <pose>2 1.5 0.25 0 0 0</pose>
+        <pose>1.5 -2 0.25 0 0 0</pose>
         <link name='box_link'>
           <inertial>
             <inertia>
@@ -699,9 +781,9 @@
               </box>
             </geometry>
             <material>
-              <ambient>0.3 0.3 0 1</ambient>
-              <diffuse>0.9 0.9 0 1</diffuse>
-              <specular>1 1 0.5 1</specular>
+              <ambient>0.2 0 0.3 1</ambient>
+              <diffuse>0.6 0 0.8 1</diffuse>
+              <specular>0.8 0.5 1 1</specular>
             </material>
           </visual>
           <pose>0 0 0 0 0 0</pose>
@@ -712,7 +794,7 @@
       </model>
 
       <model name='box3'>
-        <pose>-2.5 4.5 0.25 0 0 0</pose>
+        <pose>-1.5 2 0.25 0 0 0</pose>
         <link name='box_link'>
           <inertial>
             <inertia>
@@ -747,9 +829,9 @@
               </box>
             </geometry>
             <material>
-              <ambient>0.6 0.4 0.6 1</ambient>
-              <diffuse>0.9 0.6 0.8 1</diffuse>
-              <specular>1 0.7 0.9 1</specular>
+              <ambient>0 0 0.3 1</ambient>
+              <diffuse>0 0 0.8 1</diffuse>
+              <specular>0.5 0.5 1 1</specular>
             </material>
           </visual>
           <pose>0 0 0 0 0 0</pose>
@@ -760,55 +842,7 @@
       </model>
 
       <model name='sphere1'>
-        <pose>2 -1.5 0.3 0 0 0</pose>
-        <link name='sphere_link'>
-          <inertial>
-            <inertia>
-              <ixx>0.10000000000000001</ixx>
-              <ixy>0</ixy>
-              <ixz>0</ixz>
-              <iyy>0.10000000000000001</iyy>
-              <iyz>0</iyz>
-              <izz>0.10000000000000001</izz>
-            </inertia>
-            <mass>1</mass>
-            <pose>0 0 0 0 0 0</pose>
-          </inertial>
-          <collision name='sphere_collision'>
-            <geometry>
-              <sphere>
-                <radius>0.3</radius>
-              </sphere>
-            </geometry>
-            <surface>
-              <friction>
-                <ode/>
-              </friction>
-              <bounce/>
-              <contact/>
-            </surface>
-          </collision>
-          <visual name='sphere_visual'>
-            <geometry>
-              <sphere>
-                <radius>0.3</radius>
-              </sphere>
-            </geometry>
-            <material>
-              <ambient>0.3 0.15 0 1</ambient>
-              <diffuse>0.9 0.45 0 1</diffuse>
-              <specular>1 0.7 0.3 1</specular>
-            </material>
-          </visual>
-          <pose>0 0 0 0 0 0</pose>
-          <enable_wind>false</enable_wind>
-        </link>
-        <static>false</static>
-        <self_collide>false</self_collide>
-      </model>
-
-      <model name='sphere2'>
-        <pose>0 4 0.3 0 0 0</pose>
+        <pose>4.0 -1.0 0.3 0 0 0</pose>
         <link name='sphere_link'>
           <inertial>
             <inertia>
@@ -855,8 +889,56 @@
         <self_collide>false</self_collide>
       </model>
 
+      <model name='sphere2'>
+        <pose>-4 1.5 0.3 0 0 0</pose>
+        <link name='sphere_link'>
+          <inertial>
+            <inertia>
+              <ixx>0.10000000000000001</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>0.10000000000000001</iyy>
+              <iyz>0</iyz>
+              <izz>0.10000000000000001</izz>
+            </inertia>
+            <mass>1</mass>
+            <pose>0 0 0 0 0 0</pose>
+          </inertial>
+          <collision name='sphere_collision'>
+            <geometry>
+              <sphere>
+                <radius>0.3</radius>
+              </sphere>
+            </geometry>
+            <surface>
+              <friction>
+                <ode/>
+              </friction>
+              <bounce/>
+              <contact/>
+            </surface>
+          </collision>
+          <visual name='sphere_visual'>
+            <geometry>
+              <sphere>
+                <radius>0.3</radius>
+              </sphere>
+            </geometry>
+            <material>
+              <ambient>0.3 0.15 0 1</ambient>
+              <diffuse>0.9 0.45 0 1</diffuse>
+              <specular>1 0.7 0.3 1</specular>
+            </material>
+          </visual>
+          <pose>0 0 0 0 0 0</pose>
+          <enable_wind>false</enable_wind>
+        </link>
+        <static>false</static>
+        <self_collide>false</self_collide>
+      </model>
+
       <model name='cone1'>
-        <pose>0.5 -4.5 0.4 0 0 0</pose>
+        <pose>1 1 0.4 0 0 0</pose>
         <link name='cone_link'>
           <inertial>
             <inertia>
@@ -893,9 +975,9 @@
               </cone>
             </geometry>
             <material>
-              <ambient>0 0 0.3 1</ambient>
-              <diffuse>0 0 0.8 1</diffuse>
-              <specular>0.5 0.5 1 1</specular>
+              <ambient>0.6 0.4 0.6 1</ambient>
+              <diffuse>0.9 0.6 0.8 1</diffuse>
+              <specular>1 0.7 0.9 1</specular>
             </material>
           </visual>
           <pose>0 0 0 0 0 0</pose>
@@ -906,7 +988,7 @@
       </model> 
 
       <model name='cone2'>
-        <pose>-2 -1.5 0.4 0 0 0</pose>
+        <pose>-1 -1 0.4 0 0 0</pose>
         <link name='cone_link'>
           <inertial>
             <inertia>
@@ -943,9 +1025,9 @@
               </cone>
             </geometry>
             <material>
-              <ambient>0.2 0 0.3 1</ambient>
-              <diffuse>0.6 0 0.8 1</diffuse>
-              <specular>0.8 0.5 1 1</specular>
+              <ambient>0.3 0.3 0 1</ambient>
+              <diffuse>0.9 0.9 0 1</diffuse>
+              <specular>1 1 0.5 1</specular>
             </material>
           </visual>
           <pose>0 0 0 0 0 0</pose>
@@ -956,7 +1038,7 @@
       </model>
 
       <model name='cone3'>
-        <pose>-2 2 0.4 0 0 0</pose>
+        <pose>-6 -1.0 0.4 0 0 0</pose>
         <link name='cone_link'>
           <inertial>
             <inertia>
@@ -993,9 +1075,9 @@
               </cone>
             </geometry>
             <material>
-              <ambient>0.2 0.5 0.5 1</ambient>
-              <diffuse>0.3 0.8 0.9 1</diffuse>
-              <specular>0.5 0.9 1 1</specular>
+              <ambient>0.3 0 0 1</ambient>
+              <diffuse>0.8 0 0 1</diffuse>
+              <specular>1 0.5 0.5 1</specular>
             </material>
           </visual>
           <pose>0 0 0 0 0 0</pose>
