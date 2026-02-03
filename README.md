@@ -45,6 +45,7 @@ Custom_pkg/
 │   ├── central_node.py               # Coordination node
 │   ├── goal_node.py                  # Goal assignement node
 │   ├── map_static_broadcaster.py     # Static transformation node
+│   ├── test_node.py                  # Custom node to evaluate the system functionality
 │   └── yolo_node.py                  # Object detection node
 ├── package.xml                       # Package metadata and dependencies
 ├── setup.cfg                         # Makes package discoverable by ros2 run
@@ -165,6 +166,7 @@ This project was developed by Mariapaola Germinario and Sara Laera as part of th
 
 
   
+
 
 
 
