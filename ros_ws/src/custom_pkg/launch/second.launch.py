@@ -8,7 +8,6 @@ from launch_ros.actions import Node
 from launch.actions import GroupAction
 from launch_ros.actions import PushROSNamespace
 from launch_ros.actions import SetRemap
-
 from nav2_common.launch import ReplaceString
 
 def generate_launch_description():
@@ -18,7 +17,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     robots = ['robot1','robot2']
-    #robots = ['robot1']
+    #robots = ['robot2']
 
     nav2_launch = os.path.join(
         get_package_share_directory('nav2_bringup'),
@@ -83,7 +82,7 @@ def generate_launch_description():
         ld.add_action(explore_lite) 
         ld.add_action(goal_node)
 
-    # Nodi custom
+    # Custom node
     central_node = Node(
         package='custom_pkg',
         executable='central_node',
@@ -92,6 +91,7 @@ def generate_launch_description():
                 {"use_sim_time": use_sim_time}],
         output='screen',
     )
+    
     ld.add_action(central_node)
 
     return ld

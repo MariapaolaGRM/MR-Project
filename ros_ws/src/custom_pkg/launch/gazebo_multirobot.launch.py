@@ -8,34 +8,31 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    '''Gazebo launch per 2 tobot burger_cam'''
     ros_gz_sim = get_package_share_directory('ros_gz_sim')
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 
-    # Posizioni iniziali 
-    # posizioni per world2
-    x_pose_1 = LaunchConfiguration('x_pose_1', default='3.0') 
-    y_pose_1 = LaunchConfiguration('y_pose_1', default='-3.0')
-    x_pose_2 = LaunchConfiguration('x_pose_2', default='3.0')
-    y_pose_2 = LaunchConfiguration('y_pose_2', default='5.0')
+    # Positions for house 1 and 2 
+    #x_pose_1 = LaunchConfiguration('x_pose_1', default='3.0') 
+    #y_pose_1 = LaunchConfiguration('y_pose_1', default='-3.0')
+    #x_pose_2 = LaunchConfiguration('x_pose_2', default='3.0')
+    #y_pose_2 = LaunchConfiguration('y_pose_2', default='5.0')
+
+    # Positions for house 3, 4 and 5  
+    x_pose_1 = LaunchConfiguration('x_pose', default='2.0') 
+    y_pose_1 = LaunchConfiguration('y_pose', default='-5.0')
+    x_pose_2 = LaunchConfiguration('x_pose', default='2.0')
+    y_pose_2 = LaunchConfiguration('y_pose', default='5.5')
 
     declare_x_pose_1 = DeclareLaunchArgument('x_pose_1', description='Initial x pose for robot1')
     declare_y_pose_1 = DeclareLaunchArgument('y_pose_1', description='Initial y pose for robot1')
     declare_x_pose_2 = DeclareLaunchArgument('x_pose_2', description='Initial x pose for robot2')
     declare_y_pose_2 = DeclareLaunchArgument('y_pose_2', description='Initial y pose for robot2')
 
-    # world ufficiale
-    #x_pose_1 = LaunchConfiguration('x_pose', default='2.5') 
-    #y_pose_1 = LaunchConfiguration('y_pose', default='-5.5')
-    #x_pose_2 = LaunchConfiguration('x_pose', default='4.5')
-    #y_pose_2 = LaunchConfiguration('y_pose', default='5.5')
-
     world = os.path.join(
         get_package_share_directory('turtlebot3_gazebo'),
         'models',
         'turtlebot3_house',
-        #'house_model.sdf'
-        'house2_model.sdf'
+        'house1_model.sdf'
     )
 
     model_file1 = os.path.join(
@@ -97,7 +94,7 @@ def generate_launch_description():
                 get_package_share_directory('turtlebot3_gazebo'),
                 'models'))
 
-    # Spawn e configurazione dei robot burger_cam
+    # Spawn and configuration of burger_cam robots
     spawn_turtlebot_cmd1 = Node(
         package='ros_gz_sim',
         executable='create',
@@ -181,7 +178,7 @@ def generate_launch_description():
     ld.add_action(declare_y_pose_2)
 
     ld.add_action(gzserver_cmd) 
-    #ld.add_action(gzclient_cmd) # se commentato non si apre gazebo
+    ld.add_action(gzclient_cmd) # if commented, it does not open Gazebo
     ld.add_action(set_env_vars_resources)
     
     ld.add_action(spawn_turtlebot_cmd1)

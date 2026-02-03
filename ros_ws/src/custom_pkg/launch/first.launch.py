@@ -13,13 +13,21 @@ def generate_launch_description():
     # Add the commands to the launch description
     ld = LaunchDescription()
 
-    x_pose_1 = '3.0'
-    y_pose_1 = '-3.0'
-    x_pose_2 = '3.0'
-    y_pose_2 = '5.0'
+    # Positions for house 1 and 2
+    #x_pose_1 = '3.0'
+    #y_pose_1 = '-3.0'
+    #x_pose_2 = '3.0'
+    #y_pose_2 = '5.0'
+
+    # Positions for house 3, 4 and 5 
+    x_pose_1 = '2.0'
+    y_pose_1 = '-5.0'
+    x_pose_2 = '2.0'
+    y_pose_2 = '5.5'
+
 
     robots = ['robot1','robot2']
-    #robots = ['robot1']
+    #robots = ['robot2'] # to use only one robot to uncomment and comment the other
 
     slam_launch = os.path.join(
         get_package_share_directory('slam_toolbox'),
@@ -36,7 +44,6 @@ def generate_launch_description():
         'rviz', 'rviz_config.rviz'  
     )
 
-    # Launch gazebo simulation
     world_launch = os.path.join(
         get_package_share_directory('custom_pkg'),
         'launch', 'gazebo_multirobot.launch.py'  
@@ -53,7 +60,6 @@ def generate_launch_description():
     )
     ld.add_action(world_launch)
     
-
     for robot in robots:
         if robot == 'robot1':
             x_pose = x_pose_1
@@ -77,7 +83,7 @@ def generate_launch_description():
                 }.items()
                 )
         ])
-        # Trasformazioni statiche per creare il frame map
+        # Static transformations to create the frame map
         map_broadcaster_cmd = Node(
             package='tf2_ros',
             executable='static_transform_publisher',
@@ -101,11 +107,12 @@ def generate_launch_description():
                     {"use_sim_time": use_sim_time}],
             output='screen',
         )
+        
         ld.add_action(slam)
         ld.add_action(map_broadcaster_cmd)
         ld.add_action(yolo_node)
     
-    # Rviz2 con parametri
+    # Rviz2 with parameters
     rviz2 = Node(
             package='rviz2',
             executable='rviz2',
