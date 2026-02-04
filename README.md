@@ -1,4 +1,4 @@
-# 🤖  Cooperative Autonomous Exploration with RGB-D Robots
+# 🤖  Cooperative Exploration and Mapping Using Dual RGB-D Robots with YOLO-Based Object Detection
 ________________________________________
 ## 📌  Project Overview
 This repository contains the implementation of a **multi-robot autonomous exploration** system. The project is based on **ROS2 Jazzy** and **Gazebo** and involves two **TurtleBot3 Burger** robots equipped with LiDAR and RGB-D sensors. <br>
@@ -169,6 +169,7 @@ This project was developed by **Mariapaola Germinario** and **Sara Laera** as pa
 
 
   
+
 
 
 
