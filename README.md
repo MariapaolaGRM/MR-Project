@@ -153,19 +153,23 @@ ________________________________________
 •	Ultralytics YOLO: https://docs.ultralytics.com/ <br>
 ________________________________________
 ## 🎥 Simulation Demo
-A demonstration video of the autonomous exploration and object detection will be available here:<br>
-📽 YouTube link – to be added
+A demonstration video of the autonomous exploration and object detection will be available here:
+
+📽 [YouTube Demo](https://www.youtube.com/watch?v=bV1CjhSNFr0)
 ________________________________________
 ## 📄 Documentation
-The full project report, including system architecture, implementation details, and experimental results, is provided as an attached PDF.
+The full project report, including system architecture, implementation details, and experimental results, is provided as PDF file. 
+
+➡️ [Download PDF](https://drive.google.com/file/d/1lDyNk2KeSI7qQNenHDJNYkDmB8OQIx01/view?usp=sharing)
 ________________________________________
 ## ✍️ Credits
-This project was developed by Mariapaola Germinario and Sara Laera as part of the Mobile Robotics course at the Politecnico di Bari.
+This project was developed by **Mariapaola Germinario** and **Sara Laera** as part of the Mobile Robotics course at the Politecnico di Bari.
 
 
 
 
   
+
 
 
 
